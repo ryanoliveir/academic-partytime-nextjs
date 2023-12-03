@@ -1,22 +1,24 @@
 import { sign, verify } from 'jsonwebtoken';
 import { hash, compare } from 'bcryptjs';
 import process from 'process';
-// import prisma from '@/libs/prisma';
-// import { user, user_userType } from '@prisma/client'
+import prisma from '@/libs/prisma';
+import { user, user_privilege} from '@prisma/client'
 
 
-// const SECRET = process.env.JWT_SECRET as string;
+const SECRET = process.env.JWT_SECRET as string;
 
-// interface BodyProps {
-//     email: string
-//     password: string
-//     role: user_userType
-// }
+interface BodyProps {
+    email: string
+    password: string
+    birth_date: string
+    name: string
+    privilage: user_privilege
+}
 
 
-// export const createToken = async (user: user) => {
-//     return sign({ id: user.idUser ,email: user.dsEmail, userType: user.userType }, SECRET)
-// }   
+export const createToken = async (user: user) => {
+    return sign({ id: user.id ,email: user.email, userType: user.privilege}, SECRET)
+}   
 
 // const readToken = (token: any) => {
 //     try {
@@ -32,70 +34,72 @@ import process from 'process';
 // }
 
 
-// export const register = async (body: BodyProps) => {
+export const register = async (body: BodyProps) => {
 
-//     const { email, password, role = 'admin' } = body;
+    const { email, name, password, birth_date, privilage = 'admin' } = body;
 
-//     const user = await prisma.user.findUnique({
-//         where: {
-//             dsEmail: email
-//         }
+    const user = await prisma.user.findUnique({
+        where: {
+            email: email
+        }
          
-//     })
+    })
     
-//     if(user) throw new Error('User already exists');
+    if(user) throw new Error('User already exists');
     
-//     const encryptedPassword = await hash(password, 10);
-
-//     await prisma.user.create({
-//         data: {
-//             dsEmail: email.toLowerCase(),
-//             dsPassword: encryptedPassword,
-//             userType: role
-//         }
-//     })
+    const encryptedPassword = await hash(password, 10);
 
 
-//     const userCreated = await prisma.user.findUnique({
-//         where: {
-//             dsEmail: email
-//         }
-//     }) as user
     
-//     const accessToken = await createToken(userCreated);
-
-//     return accessToken;
-// }
-
-// export const signIn = async (body: BodyProps) => {
-
-//     const { email, password } = body;
-
-//     const user = await prisma.user.findUnique({
-//         where: {
-//             dsEmail: email
-//         }
-//     }) as user
+    await prisma.user.create({
+        data: {
+            email: email.toLowerCase(),
+            password: encryptedPassword,
+            birth_date: new Date(birth_date),
+            name: name,
+            privilege: privilage
+        }
+    })
 
 
+    const userCreated = await prisma.user.findUnique({
+        where: {
+            email: email
+        }
+    }) as user
+    
+    const accessToken = await createToken(userCreated);
 
-//     if(!user || !(await compare(password, user.dsPassword as string))) throw new Error('Invalid credentials');
+    return accessToken;
+}
+
+export const signIn = async (body: BodyProps) => {
+
+    const { email, password } = body;
+
+    const user = await prisma.user.findUnique({
+        where: {
+            email: email
+        }
+    }) as user
 
 
-//     const accessToken = await createToken(user);
+
+    if(!user || !(await compare(password, user.password as string))) throw new Error('Invalid credentials');
 
 
-//     const { dsEmail, userType } = user;
+    const accessToken = await createToken(user);
 
-//     return { 
-//         accessToken: accessToken,
-//         user: {
-//             idUser: user.idUser,
-//             dsEmail: user.dsEmail,
-//             userType: user.userType
-//         }
-//     }
-// }
+
+    return { 
+        accessToken: accessToken,
+        user: {
+            idUser: user.id,
+            dsEmail: user.email,
+            userType: user.privilege
+        }
+    }
+}
 
 
 // export const currentUser = async (headers: any) => {
