@@ -2,16 +2,17 @@
 type props = {
     title: string
     description: string
+    src: string
     date: string
 
 }
 
-const EventCard = ({ title, description, date }: props) => {
+const EventCard = ({ title, description, src, date }: props) => {
   return (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg m-4">
+    <div className="max-w-sm max-h-80 rounded overflow-hidden shadow-lg m-4">
       <img
         className="w-full h-40 object-cover"
-        src="https://placekitten.com/600/400"
+        src={src}
         alt="Event"
       />
       <div className="px-6 py-4">
