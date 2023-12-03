@@ -10,7 +10,7 @@ const eventsData = [
   },
   {
     id: 2,
-    title: "Event 2",
+    title: "Lollapalooza",
     description: "Lollapalooza 2024",
     src: "https://poltronanerd.com.br/wp-content/uploads/2018/06/Sem-titulo-2-1-768x480.jpg",
     date: "2024-04-24",
