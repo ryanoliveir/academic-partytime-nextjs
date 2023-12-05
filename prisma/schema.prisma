@@ -18,7 +18,7 @@ model event {
   state          String?      @db.VarChar(255)
   postal_code    String?      @db.VarChar(255)
   organizationId Int
-  organization   organization @relation(fields: [organizationId], references: [id], onUpdate: Restrict, map: "event_ibfk_1")
+  organization   organization @relation(fields: [organizationId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "event_ibfk_1")
   user_event     user_event[]
 
   @@index([organizationId], map: "organizationId")
@@ -46,8 +46,8 @@ model user_event {
   id_user_event Int    @id @default(autoincrement())
   idUser        Int?
   idEvent       Int?
-  user          user?  @relation(fields: [idUser], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "user_event_ibfk_1")
-  event         event? @relation(fields: [idEvent], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "user_event_ibfk_2")
+  user          user?  @relation(fields: [idUser], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_event_ibfk_1")
+  event         event? @relation(fields: [idEvent], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_event_ibfk_2")
 
   @@index([idEvent], map: "idEvent")
   @@index([idUser], map: "idUser")
